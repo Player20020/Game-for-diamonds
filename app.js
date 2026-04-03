@@ -1,68 +1,73 @@
 // ==========================================
-// СОСТОЯНИЕ СИСТЕМЫ
+// СОСТОЯНИЕ СИСТЕМЫ (ЗАГРУЗКА)
 // ==========================================
 let coins = parseInt(localStorage.getItem('sys_coins')) || 0;
 let lastBonusTime = parseInt(localStorage.getItem('sys_last_bonus')) || 0;
 let hasPassive = localStorage.getItem('sys_passive') === 'true';
-let globalMsg = localStorage.getItem('sys_global_msg') || "ДОБРО ПОЖАЛОВАТЬ В ТЕРМИНАЛ V4.0. СИСТЕМА СТАБИЛЬНА.";
+let globalMsg = localStorage.getItem('sys_global_msg') || "ДОБРО ПОЖАЛОВАТЬ. СИСТЕМА ОБНОВЛЕНА ДО V4.1";
 
-// Инвентарь
-let inventory = JSON.parse(localStorage.getItem('sys_inv')) || { 
-    iron: 0, emerald: 0, diamond: 0, netherite: 0 
-};
-
-// История чеков
+// Инвентарь и История
+let inventory = JSON.parse(localStorage.getItem('sys_inv')) || { iron: 0, emerald: 0, diamond: 0, netherite: 0 };
 let history = JSON.parse(localStorage.getItem('sys_history')) || [];
 
 // Цены
 const prices = { iron: 300, emerald: 400, diamond: 600, netherite: 2000 };
 
 // ==========================================
-// ИНИЦИАЛИЗАЦИЯ И ОБНОВЛЕНИЕ UI
+// ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 // ==========================================
 
 function updateUI() {
-    // Баланс и инвентарь
-    document.getElementById('coinsDisp').innerText = coins.toLocaleString();
-    document.getElementById('inv-iron').innerText = inventory.iron;
-    document.getElementById('inv-emerald').innerText = inventory.emerald;
-    document.getElementById('inv-diamond').innerText = inventory.diamond;
-    document.getElementById('inv-netherite').innerText = inventory.netherite;
+    // Числа и тексты
+    safeSetText('coinsDisp', coins.toLocaleString());
+    safeSetText('inv-iron', inventory.iron);
+    safeSetText('inv-emerald', inventory.emerald);
+    safeSetText('inv-diamond', inventory.diamond);
+    safeSetText('inv-netherite', inventory.netherite);
+    
+    // Глобальные сообщения
+    safeSetText('globalTicker', globalMsg);
+    safeSetText('inboxContent', globalMsg);
 
-    // Глобальное сообщение
-    document.getElementById('globalTicker').innerText = globalMsg;
-    document.getElementById('inboxContent').innerText = globalMsg;
-
-    // Кнопка апгрейда
+    // Кнопка апгрейда (30к)
     const upgBtn = document.getElementById('upgradeBtn');
-    if (hasPassive) {
-        upgBtn.innerText = "АКТИВЕН";
-        upgBtn.disabled = true;
-    } else {
-        upgBtn.disabled = (coins < 30000);
+    if (upgBtn) {
+        if (hasPassive) {
+            upgBtn.innerText = "АКТИВЕН";
+            upgBtn.disabled = true;
+            upgBtn.style.boxShadow = "0 0 10px var(--neon-green)";
+        } else {
+            upgBtn.disabled = (coins < 30000);
+        }
     }
 
     renderHistory();
     calcExchange();
 }
 
-// Таймер для кнопки бонуса
+// Таймер на 30 минут
 function updateTimer() {
     const btn = document.getElementById('bonusBtn');
     const timerText = document.getElementById('timerText');
-    const cooldown = 10 * 60 * 1000; // 10 минут в миллисекундах
-    const now = Date.now();
-    const diff = cooldown - (now - lastBonusTime);
+    if (!btn || !timerText) return;
 
-    if (diff > 0) {
+    const cooldown = 30 * 60 * 1000; // 30 минут
+    const now = Date.now();
+    const elapsed = now - lastBonusTime;
+    const remaining = cooldown - elapsed;
+
+    if (remaining > 0) {
         btn.disabled = true;
-        const m = Math.floor(diff / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        timerText.innerText = `ПЕРЕЗАРЯДКА: ${m}м ${s}с`;
+        btn.style.opacity = "0.5";
+        const m = Math.floor(remaining / 60000);
+        const s = Math.floor((remaining % 60000) / 1000);
+        timerText.innerText = `ДОСТУПНО ЧЕРЕЗ: ${m}м ${s}с`;
         setTimeout(updateTimer, 1000);
     } else {
         btn.disabled = false;
+        btn.style.opacity = "1";
         timerText.innerText = "СИСТЕМА ГОТОВА К СБОРУ";
+        timerText.style.color = "var(--neon-green)";
     }
 }
 
@@ -78,41 +83,20 @@ function collectBonus() {
     updateTimer();
 }
 
-function buyPassive() {
-    if (coins >= 30000 && !hasPassive) {
-        coins -= 30000;
-        hasPassive = true;
-        saveData();
-        updateUI();
-        alert("Авто-майнер запущен!");
-    }
-}
-
-// Пассивный доход раз в минуту
-setInterval(() => {
-    if (hasPassive) {
-        coins += 100;
-        saveData();
-        updateUI();
-    }
-}, 60000);
-
 function calcExchange() {
-    const qty = document.getElementById('diamSlider').value;
-    const type = document.getElementById('resourceType').value;
+    const slider = document.getElementById('diamSlider');
+    const typeSelect = document.getElementById('resourceType');
+    if (!slider || !typeSelect) return;
+
+    const qty = parseInt(slider.value);
+    const type = typeSelect.value;
     const cost = qty * prices[type];
     
-    document.getElementById('diamLabel').innerText = qty;
-    document.getElementById('totalCost').innerText = cost.toLocaleString();
+    safeSetText('diamLabel', qty);
+    safeSetText('totalCost', cost.toLocaleString());
     
-    const btn = document.getElementById('buyBtn');
-    if (coins < cost) {
-        document.getElementById('statusInfo').innerHTML = "<span style='color:red'>HACK...</span>";
-        btn.disabled = true;
-    } else {
-        document.getElementById('statusInfo').innerHTML = "<span style='color:var(--neon-green)'>READY</span>";
-        btn.disabled = false;
-    }
+    const buyBtn = document.getElementById('buyBtn');
+    if (buyBtn) buyBtn.disabled = (coins < cost);
 }
 
 function executeTrade() {
@@ -125,56 +109,47 @@ function executeTrade() {
         inventory[type] += qty;
         
         const dateStr = new Date().toLocaleString();
-        const hashStr = 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+        const hashStr = 'TX-' + Math.random().toString(36).substring(2, 9).toUpperCase();
         
-        // Создаем объект чека для истории
-        const receipt = {
-            date: dateStr,
-            hash: hashStr,
-            type: type.toUpperCase(),
-            qty: qty
-        };
-        
-        history.unshift(receipt); // Добавляем в начало списка
-        if (history.length > 20) history.pop(); // Храним только последние 20 сделок
+        // В историю
+        history.unshift({ date: dateStr, hash: hashStr, type: type.toUpperCase(), qty: qty });
+        if (history.length > 15) history.pop();
 
-        // Показ текущего чека
-        document.getElementById('rDate').innerText = dateStr;
-        document.getElementById('rHash').innerText = hashStr;
-        document.getElementById('rType').innerText = type.toUpperCase();
-        document.getElementById('rQty').innerText = qty;
-        document.getElementById('receiptOverlay').style.display = 'flex';
+        // В чек
+        safeSetText('rDate', dateStr);
+        safeSetText('rHash', hashStr);
+        safeSetText('rType', type.toUpperCase());
+        safeSetText('rQty', qty);
         
+        document.getElementById('receiptOverlay').style.display = 'flex';
         saveData();
         updateUI();
     }
 }
 
-function renderHistory() {
-    const list = document.getElementById('historyList');
-    list.innerHTML = "";
-    
-    if (history.length === 0) {
-        list.innerHTML = "<div style='color:#444'>История пуста...</div>";
-        return;
+function buyPassive() {
+    if (coins >= 30000 && !hasPassive) {
+        coins -= 30000;
+        hasPassive = true;
+        saveData();
+        updateUI();
     }
-
-    history.forEach(item => {
-        list.innerHTML += `
-            <div class="history-item">
-                <div style="color:var(--neon-cyan)">${item.date}</div>
-                <div>${item.type}: <span style="color:#fff">${item.qty} ед.</span></div>
-                <div style="font-size:0.6rem; color:#555">${item.hash}</div>
-            </div>
-        `;
-    });
 }
 
+// Доход +100 каждые 60 сек
+setInterval(() => {
+    if (hasPassive) {
+        coins += 100;
+        saveData();
+        updateUI();
+    }
+}, 60000);
+
 // ==========================================
-// АДМИНКА
+// АДМИН-ПАНЕЛЬ И ОКНА
 // ==========================================
 
-function openAdminModal() {
+function openAdminDirect() {
     closeModal('settingsModal');
     openModal('adminModal');
 }
@@ -185,31 +160,35 @@ function loginAdmin() {
         document.getElementById('adminControls').style.display = 'block';
         document.getElementById('adminMsgText').value = globalMsg;
     } else {
-        alert("ОШИБКА ДОСТУПА");
+        alert("ОТКАЗАНО В ДОСТУПЕ");
     }
 }
 
 function adminAddCash() {
     const val = parseInt(document.getElementById('cashAmount').value);
-    if (val) {
-        coins += val;
-        saveData();
-        updateUI();
-    }
+    if (val) { coins += val; saveData(); updateUI(); }
 }
 
 function adminSetMessage() {
-    const newMsg = document.getElementById('adminMsgText').value;
-    if (newMsg) {
-        globalMsg = newMsg;
-        saveData();
-        updateUI();
-        alert("Сообщение обновлено!");
-    }
+    const txt = document.getElementById('adminMsgText').value;
+    if (txt) { globalMsg = txt; saveData(); updateUI(); alert("ОТПРАВЛЕНО!"); }
+}
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+    list.innerHTML = history.length ? "" : "История пуста";
+    history.forEach(item => {
+        list.innerHTML += `
+            <div style="border-bottom:1px solid #222; padding:5px 0;">
+                <span style="color:var(--neon-cyan)">${item.date}</span><br>
+                ${item.type}: <b>${item.qty}</b> <small style="color:#444">${item.hash}</small>
+            </div>`;
+    });
 }
 
 // ==========================================
-// СЕРВИСНЫЕ
+// ВСПОМОГАТЕЛЬНЫЕ
 // ==========================================
 
 function saveData() {
@@ -221,11 +200,16 @@ function saveData() {
     localStorage.setItem('sys_global_msg', globalMsg);
 }
 
+function safeSetText(id, txt) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = txt;
+}
+
 function openModal(id) { document.getElementById(id).style.display = 'block'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function closeReceipt() { document.getElementById('receiptOverlay').style.display = 'none'; }
 function updateBrightness(val) { document.documentElement.style.setProperty('--brightness', val); }
 
-// Запуск
+// СТАРТ
 updateUI();
 updateTimer();
