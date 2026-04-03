@@ -1,112 +1,92 @@
+/* --- ОСНОВНЫЕ ПЕРЕМЕННЫЕ --- */
 :root {
     --neon-cyan: #00f2ff;
     --neon-pink: #ff00e1;
     --neon-green: #00ff9d;
     --bg-dark: #050505;
-    --glass: rgba(10, 10, 10, 0.85);
+    --glass: rgba(10, 10, 10, 0.95);
     --brightness: 1;
 }
 
-/* Общий фон и эффект старого монитора */
+/* --- БАЗОВЫЕ НАСТРОЙКИ --- */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Убираем синий блик при нажатии на мобиле */
+}
+
 body {
     background-color: var(--bg-dark);
     filter: brightness(var(--brightness));
     color: #fff;
-    font-family: 'Segoe UI', Roboto, Courier, monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Для удобного скролла на мобиле */
     min-height: 100vh;
     margin: 0;
-    overflow-x: hidden;
-    background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                      linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 4px, 3px 100%;
+    padding: 20px 10px;
 }
 
-/* Контейнер терминала */
+/* --- КОНТЕЙНЕР ТЕРМИНАЛА --- */
 .game-card {
     background: var(--glass);
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 242, 255, 0.2);
     border-radius: 20px;
-    padding: 30px;
-    width: 90%;
+    padding: 25px 20px;
+    width: 100%;
     max-width: 400px;
     text-align: center;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 242, 255, 0.05);
+    box-shadow: 0 0 30px rgba(0,0,0,1);
     position: relative;
-    z-index: 5;
 }
 
 h1 {
-    font-size: 1.2rem;
-    letter-spacing: 4px;
+    font-size: 1rem;
+    letter-spacing: 3px;
     color: var(--neon-cyan);
-    text-transform: uppercase;
-    margin: 10px 0 20px;
-    text-shadow: 0 0 10px var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan);
+    margin: 15px 0;
 }
 
-/* Баланс */
+/* --- БАЛАНС --- */
 .balance-container {
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 #coinsDisp {
-    font-size: 3.5rem;
+    font-size: 3rem;
     font-weight: 900;
-    color: #fff;
     text-shadow: 0 0 15px var(--neon-cyan);
 }
 
-/* Кнопки иконок в верхнем меню */
-.icon-btn {
-    cursor: pointer;
-    transition: 0.3s;
-    opacity: 0.7;
-}
-
-.icon-btn:hover {
-    opacity: 1;
-    transform: scale(1.2);
-    text-shadow: 0 0 10px currentColor;
-}
-
-/* Обычные кнопки */
+/* --- КНОПКИ --- */
 .btn {
-    background: rgba(0, 0, 0, 0.6);
+    background: #000;
     border: 1px solid var(--neon-cyan);
     color: var(--neon-cyan);
-    padding: 12px;
+    padding: 14px;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 8px;
     font-weight: bold;
-    letter-spacing: 1px;
     cursor: pointer;
     transition: 0.2s;
-    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    font-size: 0.9rem;
 }
 
-.btn:hover:not(:disabled) {
+.btn:active {
+    transform: scale(0.95);
     background: var(--neon-cyan);
     color: #000;
-    box-shadow: 0 0 20px var(--neon-cyan);
-}
-
-.btn:active:not(:disabled) {
-    transform: scale(0.98);
 }
 
 .btn:disabled {
     border-color: #333;
     color: #555;
-    cursor: not-allowed;
-    background: rgba(0,0,0,0.9);
+    opacity: 0.5;
 }
 
 .btn-pink {
@@ -114,116 +94,81 @@ h1 {
     color: var(--neon-pink);
 }
 
-.btn-pink:hover:not(:disabled) {
+.btn-pink:active {
     background: var(--neon-pink);
     color: #fff;
-    box-shadow: 0 0 20px var(--neon-pink);
 }
 
-/* Слайдер и блоки */
-.slider-box {
-    background: rgba(0,0,0,0.6);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #1a1a1a;
-}
-
-input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    background: #222;
-    height: 4px;
-    border-radius: 5px;
-    outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--neon-pink);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--neon-pink);
-}
-
-/* Модальные окна */
+/* --- МОДАЛЬНЫЕ ОКНА --- */
 .modal {
     display: none;
     position: fixed;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
-    background: #080808;
+    background: #0a0a0a;
     border: 1px solid #333;
-    padding: 25px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 15px;
     z-index: 1000;
-    width: 300px;
-    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+    width: 85%;
+    max-width: 320px;
+    box-shadow: 0 0 50px #000;
 }
 
-/* Поля ввода */
+/* --- ИНПУТЫ --- */
 input[type="text"], 
 input[type="password"], 
 input[type="number"],
 textarea {
-    background: #050505;
+    background: #000;
     border: 1px solid #333;
-    color: var(--neon-cyan);
-    padding: 10px;
+    color: #fff;
+    padding: 12px;
     width: 100%;
-    box-sizing: border-box;
-    margin: 8px 0;
-    border-radius: 4px;
-    font-family: monospace;
+    border-radius: 5px;
+    margin: 10px 0;
     outline: none;
 }
 
-input:focus, textarea:focus {
-    border-color: var(--neon-pink);
+/* --- СЛАЙДЕР --- */
+input[type="range"] {
+    width: 100%;
+    margin: 15px 0;
+    accent-color: var(--neon-pink);
 }
 
-/* Чек */
+/* --- ИСТОРИЯ --- */
+#historyList {
+    background: #000;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #111;
+}
+
+/* --- ЧЕК --- */
 .receipt-overlay {
-    display: none;
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    border-radius: 20px;
-    z-index: 100;
-    flex-direction: column;
+    background: rgba(0,0,0,0.98);
+    z-index: 200;
+    display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
+    border-radius: 20px;
 }
 
 .receipt-content {
     border: 1px dashed var(--neon-pink);
     padding: 20px;
-    width: 100%;
-    background: rgba(255, 0, 225, 0.05);
-    font-family: monospace;
+    width: 85%;
 }
 
-/* Красивый скроллбар для истории */
+/* --- СКРОЛЛБАР --- */
 ::-webkit-scrollbar {
-    width: 6px;
-}
-::-webkit-scrollbar-track {
-    background: #050505;
+    width: 4px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
     background: var(--neon-cyan);
-}
-
-/* Элемент истории чеков */
-.history-item {
-    border-bottom: 1px dashed #333;
-    padding: 8px 0;
-    margin-bottom: 5px;
+    border-radius: 10px;
 }
