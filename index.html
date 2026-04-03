@@ -2,135 +2,124 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Resource Terminal v4.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terminal v4.1 Mobile</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="game-card">
-        <div style="background: rgba(0, 242, 255, 0.1); border-bottom: 1px solid var(--neon-cyan); padding: 5px; margin: -30px -30px 15px -30px; border-radius: 20px 20px 0 0; font-family: monospace; font-size: 0.7rem; color: var(--neon-cyan); overflow: hidden; white-space: nowrap;">
-            <marquee id="globalTicker" scrollamount="4">ОЖИДАНИЕ СВЯЗИ С СЕРВЕРОМ...</marquee>
+        <div class="marquee-box" style="background: rgba(0, 242, 255, 0.1); border-bottom: 1px solid var(--neon-cyan); padding: 8px; margin: -30px -30px 15px -30px; border-radius: 20px 20px 0 0; font-family: monospace; font-size: 0.7rem; color: var(--neon-cyan); overflow: hidden;">
+            <marquee id="globalTicker">СИСТЕМА ИНИЦИАЛИЗИРОВАНА...</marquee>
         </div>
 
-        <div style="position: absolute; top: 35px; right: 20px; display: flex; gap: 15px; font-size: 1.2rem;">
-            <i class="fas fa-envelope icon-btn" onclick="openModal('msgModal')" style="color: var(--neon-green);" title="Сообщения"></i>
-            <i class="fas fa-history icon-btn" onclick="openModal('historyModal')" style="color: var(--neon-pink);" title="История чеков"></i>
-            <i class="fas fa-cog icon-btn" onclick="openModal('settingsModal')" style="color: var(--neon-cyan);" title="Настройки"></i>
+        <div style="position: absolute; top: 45px; right: 20px; display: flex; gap: 15px; font-size: 1.3rem;">
+            <i class="fas fa-envelope" onclick="openModal('msgModal')" style="color: var(--neon-green); cursor: pointer;"></i>
+            <i class="fas fa-history" onclick="openModal('historyModal')" style="color: var(--neon-pink); cursor: pointer;"></i>
+            <i class="fas fa-cog" onclick="openModal('settingsModal')" style="color: var(--neon-cyan); cursor: pointer;"></i>
         </div>
 
-        <h1 style="margin-top: 10px;">Terminal Web</h1>
+        <h1 style="margin-top: 15px; font-size: 1rem;">CRYPTO TERMINAL</h1>
         
         <div class="balance-container">
             <div id="coinsDisp">0</div>
             <div style="font-size: 0.7rem; color: var(--neon-pink); letter-spacing: 2px;">CREDITS</div>
         </div>
 
-        <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px solid #1a1a1a; margin-bottom: 20px;">
-            <div style="font-size: 0.7rem; color: #555; margin-bottom: 8px; text-align: left;">STORAGE_UNITS:</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
-                <div style="text-align: left;"><i class="fas fa-cube" style="color: #ced4da;"></i> Железо: <span id="inv-iron">0</span></div>
-                <div style="text-align: left;"><i class="fas fa-gem" style="color: #2ecc71;"></i> Изумруд: <span id="inv-emerald">0</span></div>
-                <div style="text-align: left;"><i class="far fa-gem" style="color: var(--neon-cyan);"></i> Алмаз: <span id="inv-diamond">0</span></div>
-                <div style="text-align: left;"><i class="fas fa-skull" style="color: #a55eea;"></i> Незерит: <span id="inv-netherite">0</span></div>
+        <div class="inventory-grid" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid #1a1a1a; margin-bottom: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem;">
+                <div style="text-align: left;"><i class="fas fa-cube" style="color: #ced4da;"></i> Fe: <span id="inv-iron">0</span></div>
+                <div style="text-align: left;"><i class="fas fa-gem" style="color: #2ecc71;"></i> Em: <span id="inv-emerald">0</span></div>
+                <div style="text-align: left;"><i class="far fa-gem" style="color: var(--neon-cyan);"></i> Di: <span id="inv-diamond">0</span></div>
+                <div style="text-align: left;"><i class="fas fa-skull" style="color: #a55eea;"></i> Ne: <span id="inv-netherite">0</span></div>
             </div>
         </div>
 
-        <button id="bonusBtn" class="btn" onclick="collectBonus()">
-            <i class="fas fa-bolt"></i> СБОР ДАННЫХ (+1010)
-        </button>
-        <div id="timerText" style="font-size: 0.75rem; color: #777; margin: 10px 0; height: 15px; font-family: monospace;"></div>
+        <div style="margin-bottom: 20px;">
+            <button id="bonusBtn" class="btn" onclick="collectBonus()" style="padding: 15px;">
+                <i class="fas fa-sync-alt"></i> ПОЛУЧИТЬ БОНУС
+            </button>
+            <div id="timerText" style="font-size: 0.7rem; color: #888; margin-top: 5px; font-family: monospace;">ЗАГРУЗКА...</div>
+        </div>
 
-        <div id="passiveUpgrade" style="margin-top: 10px; border: 1px dashed var(--neon-pink); padding: 12px; border-radius: 8px; background: rgba(255, 0, 225, 0.03);">
+        <div class="upgrade-box" style="border: 1px dashed var(--neon-pink); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="text-align: left;">
-                    <b style="font-size: 0.8rem; color: var(--neon-pink);">АВТО-МАЙНЕР</b><br>
-                    <span style="font-size: 0.65rem; color: #888;">Доход: 100 🪙 / мин</span>
+                    <span style="font-size: 0.7rem; color: var(--neon-pink); font-weight: bold;">АВТО-ГЕНЕРАТОР</span><br>
+                    <span style="font-size: 0.6rem; color: #666;">+100 🪙 / 1 мин.</span>
                 </div>
-                <button id="upgradeBtn" class="btn btn-pink" onclick="buyPassive()" style="width: auto; margin: 0; padding: 8px 12px; font-size: 0.7rem;">30,000 🪙</button>
+                <button id="upgradeBtn" class="btn btn-pink" onclick="buyPassive()" style="width: auto; margin: 0; padding: 5px 10px; font-size: 0.7rem;">30,000</button>
             </div>
         </div>
 
-        <div class="slider-box" style="margin-top: 20px;">
-            <div style="text-align: left; margin-bottom: 10px;">
-                <label style="font-size: 0.75rem; color: #888;">ВЫБОР РЕСУРСА:</label>
-                <select id="resourceType" onchange="calcExchange()" style="background: #000; color: var(--neon-cyan); border: 1px solid #333; width: 100%; padding: 10px; border-radius: 5px; margin-top: 5px; outline: none;">
-                    <option value="iron">Железо (300 🪙)</option>
-                    <option value="emerald">Изумруд (400 🪙)</option>
-                    <option value="diamond" selected>Алмаз (600 🪙)</option>
-                    <option value="netherite">Незерит (2000 🪙)</option>
-                </select>
-            </div>
+        <div class="slider-box">
+            <select id="resourceType" onchange="calcExchange()" style="background: #000; color: var(--neon-cyan); border: 1px solid #333; width: 100%; padding: 8px; border-radius: 5px; outline: none; margin-bottom: 10px;">
+                <option value="iron">Железо (300 🪙)</option>
+                <option value="emerald">Изумруд (400 🪙)</option>
+                <option value="diamond" selected>Алмаз (600 🪙)</option>
+                <option value="netherite">Незерит (2000 🪙)</option>
+            </select>
 
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 15px;">
-                <span>КОЛИЧЕСТВО:</span>
-                <span id="diamLabel" style="color: var(--neon-pink); font-weight: bold;">1</span>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px;">
+                <span>КОЛ-ВО: <span id="diamLabel" style="color: var(--neon-pink);">1</span></span>
+                <span>ИТОГО: <span id="totalCost" style="color: var(--neon-cyan);">600</span> 🪙</span>
             </div>
             <input type="range" id="diamSlider" min="1" max="100" value="1" oninput="calcExchange()">
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                <div style="text-align: left;">
-                    <span style="font-size: 0.7rem; color: #666;">ИТОГО:</span><br>
-                    <span id="totalCost" style="color: var(--neon-cyan); font-size: 1.2rem; font-weight: bold;">600</span> 🪙
-                </div>
-                <div id="statusInfo" class="needed-text" style="margin: 0;"></div>
-            </div>
         </div>
 
-        <button id="buyBtn" class="btn btn-pink" onclick="executeTrade()" style="font-size: 1.1rem; padding: 18px;">
-            <i class="fas fa-shopping-cart"></i> ПОДТВЕРДИТЬ
+        <button id="buyBtn" class="btn btn-pink" onclick="executeTrade()" style="margin-top: 15px; padding: 15px;">
+            <i class="fas fa-shopping-cart"></i> КУПИТЬ РЕСУРСЫ
         </button>
 
-        <div id="receiptOverlay" class="receipt-overlay">
+        <div id="receiptOverlay" class="receipt-overlay" style="display: none;">
             <div class="receipt-content">
-                <h2 style="color: var(--neon-pink); border-bottom: 2px solid var(--neon-pink); padding-bottom: 10px;">SUCCESS</h2>
-                <div style="text-align: left; font-size: 0.8rem; line-height: 1.6;">
-                    <p>> DATE: <span id="rDate"></span></p>
-                    <p>> HASH: <span id="rHash" style="color: var(--neon-cyan);"></span></p>
-                    <p>> ITEM: <span id="rType" style="color: #fff; font-weight: bold;"></span></p>
-                    <p>> QTY: <span id="rQty" style="font-size: 1.2rem; color: #fff;"></span></p>
+                <h3 style="color: var(--neon-pink); margin-top: 0;">SUCCESS</h3>
+                <div style="text-align: left; font-size: 0.75rem; font-family: monospace;">
+                    <p>DATE: <span id="rDate"></span></p>
+                    <p>HASH: <span id="rHash" style="color: var(--neon-cyan);"></span></p>
+                    <p>ITEM: <span id="rType"></span></p>
+                    <p>QTY: <span id="rQty" style="font-size: 1rem; color: #fff;"></span></p>
                 </div>
+                <button class="btn" onclick="closeReceipt()" style="margin-top: 15px;">OK</button>
             </div>
-            <button class="btn" style="margin-top: 20px; width: 90%;" onclick="closeReceipt()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div id="msgModal" class="modal">
-        <h3 style="color: var(--neon-green);"><i class="fas fa-envelope"></i> ВХОДЯЩИЕ</h3>
-        <div id="inboxContent" style="background: rgba(0,255,157,0.05); padding: 15px; border-left: 2px solid var(--neon-green); text-align: left; font-size: 0.85rem; line-height: 1.4; color: #ccc;">
-            Нет новых сообщений.
-        </div>
-        <button class="btn" onclick="closeModal('msgModal')" style="margin-top: 15px;">ЗАКРЫТЬ</button>
+        <h3 style="color: var(--neon-green);">INBOX</h3>
+        <div id="inboxContent" style="font-size: 0.8rem; text-align: left; background: #111; padding: 10px; border-radius: 5px; min-height: 50px;"></div>
+        <button class="btn" onclick="closeModal('msgModal')">ЗАКРЫТЬ</button>
     </div>
 
     <div id="historyModal" class="modal">
-        <h3 style="color: var(--neon-pink);"><i class="fas fa-history"></i> ИСТОРИЯ СДЕЛОК</h3>
-        <div id="historyList" style="max-height: 250px; overflow-y: auto; text-align: left; font-size: 0.75rem;">
-            </div>
-        <button class="btn btn-pink" onclick="closeModal('historyModal')" style="margin-top: 15px;">ЗАКРЫТЬ</button>
+        <h3 style="color: var(--neon-pink);">HISTORY</h3>
+        <div id="historyList" style="max-height: 200px; overflow-y: auto; font-size: 0.7rem; text-align: left;"></div>
+        <button class="btn btn-pink" onclick="closeModal('historyModal')" style="margin-top: 10px;">ЗАКРЫТЬ</button>
     </div>
 
     <div id="settingsModal" class="modal">
-        <h3 style="color: var(--neon-cyan);">НАСТРОЙКИ</h3>
-        <button class="btn" onclick="openAdminModal()">АДМИН ПАНЕЛЬ</button>
-        <button class="btn btn-pink" onclick="closeModal('settingsModal')" style="margin-top: 15px;">ЗАКРЫТЬ</button>
+        <h3 style="color: var(--neon-cyan);">SETTINGS</h3>
+        <div style="margin-bottom: 15px;">
+            Яркость: <input type="range" min="0.5" max="1.5" step="0.1" value="1" oninput="updateBrightness(this.value)">
+        </div>
+        <button class="btn" onclick="openAdminDirect()">ADMIN PANEL</button>
+        <button class="btn-pink btn" onclick="closeModal('settingsModal')" style="margin-top: 10px;">ЗАКРЫТЬ</button>
     </div>
 
     <div id="adminModal" class="modal">
-        <h3 style="color: var(--neon-pink);">ROOT ACCESS</h3>
+        <h3 style="color: var(--neon-pink);">ADMIN AUTH</h3>
         <input type="password" id="adminPass" placeholder="ПАРОЛЬ">
         <button class="btn" onclick="loginAdmin()">ВХОД</button>
         
-        <div id="adminControls" style="display: none; margin-top: 15px; border-top: 1px dashed #444; padding-top: 15px;">
-            <input type="number" id="cashAmount" placeholder="Кол-во монет">
-            <button class="btn" onclick="adminAddCash()" style="padding: 5px; margin-bottom: 15px;">ВЫДАТЬ МОНЕТЫ</button>
+        <div id="adminControls" style="display: none; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
+            <input type="number" id="cashAmount" placeholder="Монеты">
+            <button class="btn" onclick="adminAddCash()" style="padding: 5px;">ВЫДАТЬ</button>
             
-            <p style="font-size: 0.7rem; color: #888; text-align: left; margin: 0 0 5px 0;">ГЛОБАЛЬНОЕ СООБЩЕНИЕ:</p>
-            <textarea id="adminMsgText" style="width: 100%; height: 60px; background: #000; color: #fff; border: 1px solid #333; padding: 5px;"></textarea>
-            <button class="btn btn-pink" onclick="adminSetMessage()" style="padding: 5px;">ОТПРАВИТЬ ВСЕМ</button>
+            <textarea id="adminMsgText" placeholder="Новое сообщение" style="margin-top: 10px; height: 50px;"></textarea>
+            <button class="btn btn-pink" onclick="adminSetMessage()" style="padding: 5px;">ОПОВЕСТИТЬ</button>
         </div>
-        <button class="btn" onclick="closeModal('adminModal')" style="margin-top: 15px;">ОТКЛЮЧИТЬСЯ</button>
+        <button class="btn" onclick="closeModal('adminModal')" style="margin-top: 10px;">ВЫХОД</button>
     </div>
 
     <script src="app.js"></script>
